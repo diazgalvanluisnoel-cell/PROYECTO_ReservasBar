@@ -11,7 +11,9 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumnModel;
-
+import org.apache.poi.ss.usermodel.*; 
+import org.apache.poi.xssf.usermodel.XSSFWorkbook; 
+import java.io.FileOutputStream;
 
 public class TablaReserva extends javax.swing.JFrame {
 
@@ -88,6 +90,48 @@ public class TablaReserva extends javax.swing.JFrame {
     }
 }
     
+    public void exportarTabla(JTable tabla, String nombreArchivo) {
+        try {
+            Workbook libro = new XSSFWorkbook();
+            Sheet hoja = libro.createSheet("Historial");
+
+             // Escribir encabezados
+            Row filaEncabezado = hoja.createRow(0);
+
+            for (int i = 0; i < tabla.getColumnCount(); i++) {
+
+                Cell celda = filaEncabezado.createCell(i);
+                celda.setCellValue(tabla.getColumnName(i));
+            }
+
+            // Escribir filas
+            for (int i = 0; i < tabla.getRowCount(); i++) {
+
+                Row fila = hoja.createRow(i + 1);
+
+                for (int j = 0; j < tabla.getColumnCount(); j++) {
+
+                    Object valor = tabla.getValueAt(i, j);
+                    Cell celda = fila.createCell(j);
+                    if (valor instanceof Number) {
+                        celda.setCellValue(Double.parseDouble(valor.toString()));
+                    } else {
+                        celda.setCellValue(valor != null ? valor.toString() : "");
+                    }
+                }
+            }
+            FileOutputStream archivo = new FileOutputStream(nombreArchivo + ".xlsx");
+
+            libro.write(archivo);
+            archivo.close();
+            libro.close();
+
+            System.out.println("Archivo Excel creado correctamente.");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -97,6 +141,7 @@ public class TablaReserva extends javax.swing.JFrame {
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         btnactualizarEst = new javax.swing.JButton();
+        btnactualizarEst1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -164,6 +209,14 @@ public class TablaReserva extends javax.swing.JFrame {
             }
         });
 
+        btnactualizarEst1.setFont(new java.awt.Font("Dialog", 1, 16)); // NOI18N
+        btnactualizarEst1.setText("Exportar a Excel");
+        btnactualizarEst1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnactualizarEst1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -174,11 +227,12 @@ public class TablaReserva extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGap(37, 37, 37)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(42, 42, 42)
-                        .addComponent(btnactualizarEst, javax.swing.GroupLayout.PREFERRED_SIZE, 187, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(42, 42, 42)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btnactualizarEst1, javax.swing.GroupLayout.PREFERRED_SIZE, 187, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnactualizarEst, javax.swing.GroupLayout.PREFERRED_SIZE, 187, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -189,9 +243,11 @@ public class TablaReserva extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)
                     .addComponent(btnactualizarEst))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton2)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton2)
+                    .addComponent(btnactualizarEst1))
+                .addContainerGap(16, Short.MAX_VALUE))
         );
 
         pack();
@@ -225,10 +281,17 @@ public class TablaReserva extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnactualizarEstActionPerformed
 
+    private void btnactualizarEst1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnactualizarEst1ActionPerformed
+        // TODO add your handling code here:
+        
+       exportarTabla(tablareserva, "HistorialReservas");
+    }//GEN-LAST:event_btnactualizarEst1ActionPerformed
+
    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnactualizarEst;
+    private javax.swing.JButton btnactualizarEst1;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JScrollPane jScrollPane1;
