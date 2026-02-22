@@ -562,7 +562,7 @@ try (Connection conex = Coneccion.getConnection();
 
     } else {
         JOptionPane.showMessageDialog(this,
-            "No hay mesas disponibles para esa fecha y hora",
+            "No hay mesas disponibles para esa fecha seleccionada",
             "Sin mesas",
             JOptionPane.WARNING_MESSAGE);
     }

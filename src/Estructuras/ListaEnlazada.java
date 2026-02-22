@@ -1,6 +1,6 @@
 package Estructuras;
 
-import Clases.Reserva;
+import Clases.ReservaDtaos;
 
 public class ListaEnlazada <E>  {
    

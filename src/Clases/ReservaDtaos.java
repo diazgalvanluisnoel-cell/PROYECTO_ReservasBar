@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 
-public class Reserva {
+public class ReservaDtaos {
     
    private int idReserva;
    private String nombre;
@@ -16,7 +16,7 @@ public class Reserva {
    private int personas;
    private String estado;
 
-    public Reserva(int idReserva, String nombre, String telefono, LocalDate fecha, LocalTime hora, int mesa, int personas, String estado) {
+    public ReservaDtaos(int idReserva, String nombre, String telefono, LocalDate fecha, LocalTime hora, int mesa, int personas, String estado) {
         this.idReserva = idReserva;
         this.nombre = nombre;
         this.telefono = telefono;

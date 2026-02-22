@@ -3,7 +3,7 @@ package Interfaces;
 import Gestion.Coneccion;
 import Clases.ClienteFrecuente;
 import Clases.ClienteHistoria;
-import Clases.Reserva;
+import Clases.ReservaDtaos;
 import Estructuras.LinkedPila;
 import Estructuras.ListaEnlazada;
 import Estructuras.Node;
@@ -25,8 +25,9 @@ import javax.swing.table.DefaultTableModel;
 
 public class VistaReserva extends javax.swing.JFrame {
 
-    private LinkedPila<Reserva> pilaHistoria = new LinkedPila<>();
-
+    private LinkedPila<ReservaDtaos> pilaHistoria = new LinkedPila<>();
+    private  ControlReserva control = new ControlReserva();
+    
     public VistaReserva() {
         pilaHistoria = new LinkedPila<>();
 
@@ -335,7 +336,9 @@ public class VistaReserva extends javax.swing.JFrame {
         try {
             Connection con = Coneccion.getConnection();
 
-            String sql = "SELECT r.id_reserva,r.fecha,r.hora,r.cant_personas,r.fk_cliente,r.fk_mesa,c.nombre,c.telefono From reserva r JOIN cliente c On r.fk_cliente=c.id_cliente WHERE id_reserva=? AND NOT estado = 'Completada' ";
+            String sql = "SELECT r.id_reserva,r.fecha,r.hora,r.cant_personas,r.fk_cliente, "
+                    + "r.fk_mesa,c.nombre,c.telefono From reserva r JOIN cliente c "
+                    + "On r.fk_cliente=c.id_cliente WHERE id_reserva = ? AND NOT estado = 'Completada' ";
 
             PreparedStatement ps = con.prepareStatement(sql);
             ps.setInt(1, iden);
@@ -351,7 +354,7 @@ public class VistaReserva extends javax.swing.JFrame {
                 String telefono = rs.getString("telefono");
                 String nombre = rs.getString("nombre");
                 id_cliente = rs.getInt("fk_cliente");
-
+                
                 JOptionPane.showMessageDialog(this, "Reserva Encontrada " + "\n\nNombre : " + nombre + "\nTelefono : " + telefono + "\nFecha : " + fecha + "\nHora : " + hora + "\nCantidad de Personas : " + cant_persona + "\nNumero de Mesa : " + mesa);
 
                 String atributo = JOptionPane.showInputDialog(null, "Que atributo desea modificar:\n\n"
@@ -475,15 +478,11 @@ public class VistaReserva extends javax.swing.JFrame {
                             break;
                         }
 
-                        try (PreparedStatement ps4 = con.prepareStatement(
-                                "UPDATE reserva SET fecha = ? WHERE id_reserva = ?")) {
-
-                            ps4.setDate(1, Date.valueOf(LocalDate.parse(fechaTxt)));
-                            ps4.setInt(2, iden);
-                            ps4.executeUpdate();
-                        }
-
-                        JOptionPane.showMessageDialog(null, "Fecha actualizada correctamente");
+                        // metodo modificarFecha()
+                     LocalDate fechaNueva = LocalDate.parse(fechaTxt);
+                     
+                    control.modificarFecha(iden, fechaNueva);                
+                     
                         break;
                     }
 
@@ -617,7 +616,7 @@ public class VistaReserva extends javax.swing.JFrame {
                 }
 
                 ControlReserva control = new ControlReserva();
-                ListaEnlazada <Reserva> lista = control.buscarReservasPorNombre(nombreBuscar); 
+                ListaEnlazada <ReservaDtaos> lista = control.buscarReservasPorNombre(nombreBuscar); 
                 
                 if (lista.isEmpty()) { 
                     JOptionPane.showMessageDialog(this, "No hay reservas para " + nombreBuscar);
@@ -628,7 +627,7 @@ public class VistaReserva extends javax.swing.JFrame {
                 tabla.limpiarTabla();
                 
                 
-                Node <Reserva> nodo = lista.getCabeza();
+                Node <ReservaDtaos> nodo = lista.getCabeza();
                 
                 while(nodo!=null){
                 Object [] fila=new Object[]{
@@ -684,7 +683,7 @@ public class VistaReserva extends javax.swing.JFrame {
                 LocalDate fechac = rs1.getDate("fecha").toLocalDate();
                 LocalTime horac = rs1.getTime("hora").toLocalTime();
 
-                Reserva r = new Reserva(
+                ReservaDtaos r = new ReservaDtaos(
                         rs1.getInt("id_reserva"),
                         rs1.getString("nombre"),
                         rs1.getString("telefono"),
@@ -706,7 +705,7 @@ public class VistaReserva extends javax.swing.JFrame {
 
             while (!pilaHistoria.isEmpty()) {
 
-                Reserva r2 = pilaHistoria.pop();
+                ReservaDtaos r2 = pilaHistoria.pop();
 
                 Object[] fila = new Object[]{
                     r2.getIdReserva(),
