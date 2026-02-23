@@ -155,7 +155,7 @@ public class PedirReserva extends javax.swing.JFrame {
         jLabel7.setText("Mesa >");
 
         btngenerarmesa.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
-        btngenerarmesa.setText("GENERAR >");
+        btngenerarmesa.setText("BUSCAR");
         btngenerarmesa.setToolTipText("Mesas disponibles");
         btngenerarmesa.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
         btngenerarmesa.addActionListener(new java.awt.event.ActionListener() {

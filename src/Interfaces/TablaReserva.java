@@ -1,9 +1,11 @@
 package Interfaces;
 
 
+import Gestion.Coneccion;
 import Gestion.ControlReserva;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.io.FileInputStream;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
@@ -14,6 +16,9 @@ import javax.swing.table.TableColumnModel;
 import org.apache.poi.ss.usermodel.*; 
 import org.apache.poi.xssf.usermodel.XSSFWorkbook; 
 import java.io.FileOutputStream;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 public class TablaReserva extends javax.swing.JFrame {
 
@@ -132,6 +137,86 @@ public class TablaReserva extends javax.swing.JFrame {
         }
     }
     
+    public void exportarTabla2(JTable tabla, String nombreArchivo) {
+
+        try {
+
+// 1. ABRIR el archivo existente (NO crear uno nuevo) 
+            FileInputStream plantilla = new FileInputStream(nombreArchivo + ".xlsx");
+
+            Workbook libro = new XSSFWorkbook(plantilla);
+
+// 2. Obtener la hoja donde escribes los datos 
+            Sheet hoja = libro.getSheet("Historial");
+
+            if (hoja == null) {
+
+                hoja = libro.createSheet("Historial");
+            }
+
+// 3. Borrar filas antiguas (excepto encabezado)
+            int lastRow = hoja.getLastRowNum();
+
+            for (int i = lastRow; i >= 1; i--) {
+
+                Row fila = hoja.getRow(i);
+
+                if (fila != null) {
+                    hoja.removeRow(fila);
+                }
+            }
+
+// 4. Escribir encabezados (fila 0)
+            Row filaEncabezado = hoja.getRow(0);
+
+            if (filaEncabezado == null) {
+                filaEncabezado = hoja.createRow(0);
+            }
+
+            for (int i = 0; i < tabla.getColumnCount(); i++) {
+
+                Cell celda = filaEncabezado.getCell(i);
+
+                if (celda == null) {
+                    celda = filaEncabezado.createCell(i);
+                }
+                celda.setCellValue(tabla.getColumnName(i));
+            }
+
+// 5. Escribir filas nuevas 
+            for (int i = 0; i < tabla.getRowCount(); i++) {
+
+                Row fila = hoja.createRow(i + 1);
+
+                for (int j = 0; j < tabla.getColumnCount(); j++) {
+
+                    Object valor = tabla.getValueAt(i, j);
+                    Cell celda = fila.createCell(j);
+
+                    if (valor instanceof Number) {
+
+                        celda.setCellValue(Double.parseDouble(valor.toString()));
+                    } else {
+                        celda.setCellValue(valor != null ? valor.toString() : "");
+                    }
+                }
+            }
+
+// 6. Guardar cambios en el MISMO archivo 
+            plantilla.close();
+
+// cerrar lectura
+            FileOutputStream archivo = new FileOutputStream(nombreArchivo + ".xlsx");
+            libro.write(archivo);
+            archivo.close();
+            libro.close();
+
+            System.out.println("Archivo Excel ACTUALIZADO correctamente.");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -141,7 +226,8 @@ public class TablaReserva extends javax.swing.JFrame {
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         btnactualizarEst = new javax.swing.JButton();
-        btnactualizarEst1 = new javax.swing.JButton();
+        jButton3 = new javax.swing.JButton();
+        btneliminar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -201,7 +287,7 @@ public class TablaReserva extends javax.swing.JFrame {
             }
         });
 
-        btnactualizarEst.setFont(new java.awt.Font("Dialog", 1, 16)); // NOI18N
+        btnactualizarEst.setFont(new java.awt.Font("Dialog", 1, 15)); // NOI18N
         btnactualizarEst.setText("Actualizar Estado");
         btnactualizarEst.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -209,11 +295,19 @@ public class TablaReserva extends javax.swing.JFrame {
             }
         });
 
-        btnactualizarEst1.setFont(new java.awt.Font("Dialog", 1, 16)); // NOI18N
-        btnactualizarEst1.setText("Exportar a Excel");
-        btnactualizarEst1.addActionListener(new java.awt.event.ActionListener() {
+        jButton3.setFont(new java.awt.Font("Dialog", 1, 15)); // NOI18N
+        jButton3.setText("Exportar a Excel ");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnactualizarEst1ActionPerformed(evt);
+                jButton3ActionPerformed(evt);
+            }
+        });
+
+        btneliminar.setFont(new java.awt.Font("Dialog", 1, 15)); // NOI18N
+        btneliminar.setText("Eliminar");
+        btneliminar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btneliminarActionPerformed(evt);
             }
         });
 
@@ -230,9 +324,11 @@ public class TablaReserva extends javax.swing.JFrame {
                     .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(42, 42, 42)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(btnactualizarEst1, javax.swing.GroupLayout.PREFERRED_SIZE, 187, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnactualizarEst, javax.swing.GroupLayout.PREFERRED_SIZE, 187, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnactualizarEst, javax.swing.GroupLayout.DEFAULT_SIZE, 172, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addComponent(btneliminar, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -243,11 +339,13 @@ public class TablaReserva extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)
                     .addComponent(btnactualizarEst))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton2)
-                    .addComponent(btnactualizarEst1))
-                .addContainerGap(16, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jButton3)
+                        .addComponent(btneliminar))
+                    .addComponent(jButton2))
+                .addContainerGap(24, Short.MAX_VALUE))
         );
 
         pack();
@@ -281,19 +379,65 @@ public class TablaReserva extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnactualizarEstActionPerformed
 
-    private void btnactualizarEst1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnactualizarEst1ActionPerformed
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         // TODO add your handling code here:
         
-       exportarTabla(tablareserva, "HistorialReservas");
-    }//GEN-LAST:event_btnactualizarEst1ActionPerformed
+        exportarTabla2(tablareserva, "HistorialReservasNew");
+        
+        JOptionPane.showMessageDialog(this, "Historial exportado a Excel correctamente.","EXCEL",
+             JOptionPane.INFORMATION_MESSAGE);
+    }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void btneliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btneliminarActionPerformed
+        // TODO add your handling code here:
+        
+        int fila = tablareserva.getSelectedRow();
+        
+        if(fila == -1){
+            
+        JOptionPane.showMessageDialog(this, "Selecciona una reserva del historial para eliminar.",
+                "ADVERTENCIA",JOptionPane.WARNING_MESSAGE);
+        return;
+        }
+        
+        int id = Integer.parseInt(tablareserva.getValueAt(fila, 0).toString());
+        
+        try{
+            Connection con = Coneccion.getConnection();
+            
+        String sql = "DELETE FROM reserva WHERE id_reserva=?";
+        
+        PreparedStatement ps = con.prepareStatement(sql);
+        ps.setInt(1, id);
+        
+        int eliminada=-1;
+        
+        eliminada = ps.executeUpdate();
+        
+            String nombre = tablareserva.getValueAt(fila, 1).toString();
+        
+            // elimino de la tabla visualmente 
+       DefaultTableModel modelo = (DefaultTableModel) tablareserva.getModel();
+       modelo.removeRow(fila);
+        
+        if(eliminada != -1){
+        JOptionPane.showMessageDialog(this, "Reservacion de "+nombre
+                +" eliminada con exito de la base de datos.");
+        }
+        }catch(SQLException e){
+        JOptionPane.showMessageDialog(this, "ERROR EN METODO EIMINAR RESERVA DESDE EL BOTON");
+        e.printStackTrace();
+        }
+    }//GEN-LAST:event_btneliminarActionPerformed
 
    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnactualizarEst;
-    private javax.swing.JButton btnactualizarEst1;
+    private javax.swing.JButton btneliminar;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable tablareserva;
     // End of variables declaration//GEN-END:variables
