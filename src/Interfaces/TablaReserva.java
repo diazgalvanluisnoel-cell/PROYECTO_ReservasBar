@@ -384,7 +384,7 @@ public class TablaReserva extends javax.swing.JFrame {
         
         exportarTabla2(tablareserva, "HistorialReservasNew");
         
-        JOptionPane.showMessageDialog(this, "Historial exportado a Excel correctamente.","EXCEL",
+        JOptionPane.showMessageDialog(this, "Historial actualizado en Excel correctamente.","EXCEL",
              JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_jButton3ActionPerformed
 

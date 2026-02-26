@@ -147,6 +147,11 @@ public class PedirReserva extends javax.swing.JFrame {
 
         cbdia.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         cbdia.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", " " }));
+        cbdia.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbdiaActionPerformed(evt);
+            }
+        });
 
         cbmes.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         cbmes.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre" }));
@@ -305,7 +310,7 @@ public class PedirReserva extends javax.swing.JFrame {
     private void btnguardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnguardarActionPerformed
         // TODO add your handling code here:
         
-        if(idMesaSeleccion==-1){
+        if(idMesaSeleccion==-1 || txtmesa == null ){
         JOptionPane.showMessageDialog(this, "Debe generar una mesa primero","Error",JOptionPane.ERROR_MESSAGE);
         return;
         }
@@ -458,10 +463,11 @@ public class PedirReserva extends javax.swing.JFrame {
         LocalDate fecha = null;
          LocalTime hora1=null; 
         LocalDate fechahoy=LocalDate.now();
+        
         try{
         
             String nombre=txtnombre.getText();
-            if(nombre.length()<4 || nombre.matches(".*\\d.*")){
+            if(nombre.length() < 4 || nombre.matches(".*\\d.*")){
                 
              txtnombre.setBorder ( BorderFactory.createLineBorder (Color.RED , 1));
                 
@@ -472,7 +478,7 @@ public class PedirReserva extends javax.swing.JFrame {
             }
             String telefono=txttelefono.getText();
             
-            if(telefono.length()<8 || telefono.matches(".*a-zA-Z.*")){
+            if(telefono.length() < 8 || telefono.matches(".*a-zA-Z.*")){
              JOptionPane.showMessageDialog(this, "Introducir telefono correctammente","Error",JOptionPane.WARNING_MESSAGE);
              return;
             }
@@ -526,16 +532,16 @@ public class PedirReserva extends javax.swing.JFrame {
         LocalTime horafin=hora1.plusHours(1).plusMinutes(30);
           
        String sql ="SELECT m.id_mesa, m.numero, m.capacidad " +"FROM mesa m " +
-    "WHERE m.capacidad = ? OR m.capacidad = ?+1 " +"AND m.id_mesa NOT IN (" +
-    "SELECT r.fk_mesa " +"   FROM reserva r "  +"     Where r.fecha = ? " +
-    " AND ? < r.hora_fin AND ? > r.hora ) " +"ORDER BY m.capacidad ASC LIMIT 1";
+    "WHERE (m.capacidad = ? OR m.capacidad = ?) " +"AND m.id_mesa NOT IN (" +
+    "SELECT r.fk_mesa " +"FROM reserva r "  +"Where r.fecha = ? " +
+    " AND (? < r.hora_fin AND ? > r.hora )) " +"ORDER BY m.capacidad ASC LIMIT 1";
 
 try (Connection conex = Coneccion.getConnection();
      PreparedStatement ps = conex.prepareStatement(sql)) {
 
     // 2. Rellenar los ?
     ps.setInt(1, cantpersonas);
-    ps.setInt(2, cantpersonas);
+    ps.setInt(2, cantpersonas+1);
     ps.setDate(3, java.sql.Date.valueOf(fecha)); // LocalDate → SQL DATE
     ps.setTime(4, java.sql.Time.valueOf(hora1)); // LocalTime → SQL TIME
     ps.setTime(5, java.sql.Time.valueOf(horafin));
@@ -551,9 +557,18 @@ try (Connection conex = Coneccion.getConnection();
         JOptionPane.showMessageDialog(this,
             "Mesa " + numeroMesa + " asignada correctamente ");
 
+        // Mostrar Mesas y bloquear campos
         txtmesa.setText(String.valueOf(numeroMesa));
-        txtmesa.setEnabled(false);
-        
+        txtmesa.setEditable(false);
+        txtnombre.setEditable(false);
+        txttelefono.setEditable(false);
+        spnhora.setEnabled(false);
+        cbdia.setEditable(false);
+        cbdia.setEnabled(false);
+        cbmes.setEnabled(false);
+        cbmes.setEditable(false);
+        spnpersonas.setEnabled(false);
+          
         // 5. Guardar idMesa para usarlo luego al guardar el pedido
         this.idMesaSeleccion = idMesa;
 
@@ -568,8 +583,9 @@ try (Connection conex = Coneccion.getConnection();
     }
 
 } catch (Exception e) {
+    e.printStackTrace();
     JOptionPane.showMessageDialog(this,
-        "Error al generar la mesa",
+        "Error metodo generar la mesa",
         "Error",
         JOptionPane.ERROR_MESSAGE);
 }
@@ -593,9 +609,21 @@ try (Connection conex = Coneccion.getConnection();
         btnguardar.setEnabled(true);
         txtnombre.setForeground(Color.BLACK);
         
+        txtnombre.setEditable(true);
+        txttelefono.setEditable(true);
+        spnhora.setEnabled(true);
+        cbdia.setEditable(true);
+        cbdia.setEnabled(true);
+        cbmes.setEnabled(true);
+        cbmes.setEditable(true);
+        spnpersonas.setEnabled(true);
         
         JOptionPane.showMessageDialog(null,"Campos restaurados");
     }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void cbdiaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbdiaActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cbdiaActionPerformed
 
     
 
