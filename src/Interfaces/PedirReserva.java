@@ -311,7 +311,7 @@ public class PedirReserva extends javax.swing.JFrame {
         // TODO add your handling code here:
         
         if(idMesaSeleccion==-1 || txtmesa == null ){
-        JOptionPane.showMessageDialog(this, "Debe generar una mesa primero","Error",JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(this, "Debe asignarse una mesa primero","Error",JOptionPane.ERROR_MESSAGE);
         return;
         }
         

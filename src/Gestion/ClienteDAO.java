@@ -26,7 +26,7 @@ public class ClienteDAO {
       + "COUNT(r.id_reserva) AS total_reservas, MAX(r.fecha) AS ultima_fecha "
       + "FROM cliente c LEFT JOIN reserva r "
       + "ON r.fk_cliente = c.id_cliente GROUP BY c.id_cliente, c.nombre, c.telefono "
-      + "ORDER BY ultima_fecha DESC NULLS LAST;";
+      + "ORDER BY ultima_fecha DESC ;";
     
     PreparedStatement ps = conex.prepareStatement(sql); 
     ResultSet rs = ps.executeQuery();

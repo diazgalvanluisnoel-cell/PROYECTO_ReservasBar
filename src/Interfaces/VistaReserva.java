@@ -590,7 +590,7 @@ public class VistaReserva extends javax.swing.JFrame {
 
                         };
 
-                        TablaReserva Tabla = new TablaReserva();
+                        TablaReserva Tabla = new TablaReserva(false,false);
 
                         Tabla.mostrarReservaEnTabla(fila);
                         Tabla.setLocationRelativeTo(null);
@@ -623,7 +623,7 @@ public class VistaReserva extends javax.swing.JFrame {
                     return; 
                 } 
                 
-                TablaReserva tabla = new TablaReserva();
+                TablaReserva tabla = new TablaReserva(false,false);
                 tabla.limpiarTabla();
                 
                 
@@ -674,7 +674,7 @@ public class VistaReserva extends javax.swing.JFrame {
             PreparedStatement ps = con.prepareStatement(sql);
 
             ResultSet rs1 = ps.executeQuery();
-            TablaReserva tabla = new TablaReserva();
+            TablaReserva tabla = new TablaReserva(true,true);
 
             tabla.limpiarTabla();
 
@@ -789,7 +789,7 @@ public class VistaReserva extends javax.swing.JFrame {
             ps.executeQuery();
 
             ResultSet rs1 = ps.executeQuery();
-            TablaReserva Tabla2 = new TablaReserva();
+            TablaReserva Tabla2 = new TablaReserva(false,false);
 
             Tabla2.limpiarTabla();
             boolean datos = false;
@@ -869,10 +869,11 @@ public class VistaReserva extends javax.swing.JFrame {
             ps.executeQuery();
 
             ResultSet rs1 = ps.executeQuery();
-            TablaReserva Tabla2 = new TablaReserva();
+            TablaReserva Tabla2 = new TablaReserva(false,false);
 
             Tabla2.limpiarTabla();
-
+            
+            
             while (rs1.next()) {
 
                 Object[] fila = new Object[]{
@@ -911,7 +912,7 @@ public class VistaReserva extends javax.swing.JFrame {
             ps.executeQuery();
 
             ResultSet rs1 = ps.executeQuery();
-            TablaReserva Tabla2 = new TablaReserva();
+            TablaReserva Tabla2 = new TablaReserva(false,true);
 
             Tabla2.limpiarTabla();
             boolean datos = false;
@@ -961,7 +962,7 @@ public class VistaReserva extends javax.swing.JFrame {
             ps.executeQuery();
 
             ResultSet rs1 = ps.executeQuery();
-            TablaReserva Tabla2 = new TablaReserva();
+            TablaReserva Tabla2 = new TablaReserva(false,false);
 
             Tabla2.limpiarTabla();
 
